@@ -1,0 +1,60 @@
+services:
+  llama-cpp:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    ports:
+      - "10000:10000"
+    volumes:
+      - ./models:/app/models
+      - llama-cache:/app/cache
+    environment:
+      - LLAMA_MODEL=${LLAMA_MODEL}
+      - LLAMA_CTX_SIZE=${LLAMA_CTX_SIZE:-128000}
+      - LLAMA_BATCH_SIZE=${LLAMA_BATCH_SIZE:-2048}
+      - LLAMA_UBATCH_SIZE=${LLAMA_UBATCH_SIZE:-1024}
+      - LLAMA_THREADS=${LLAMA_THREADS:-16}
+      - LLAMA_N_PARALLEL=${LLAMA_N_PARALLEL:-8}
+      - LLAMA_TEMP=${LLAMA_TEMP:-0.8}
+      - LLAMA_TOP_K=${LLAMA_TOP_K:-40}
+      - LLAMA_TOP_P=${LLAMA_TOP_P:-0.95}
+      - LLAMA_MIN_P=${LLAMA_MIN_P:-0.05}
+      - LLAMA_REPEAT_PENALTY=${LLAMA_REPEAT_PENALTY:-1.1}
+      - LLAMA_CACHE=/app/cache
+    command: >
+      -dr ${LLAMA_MODEL}
+      --model ${LLAMA_MODEL}
+      --port 10000
+      --ctx-size ${LLAMA_CTX_SIZE:-128000}
+      --batch-size ${LLAMA_BATCH_SIZE:-1024}
+      --ubatch-size ${LLAMA_UBATCH_SIZE:-512}
+      --threads ${LLAMA_THREADS:-16}
+      --threads-batch ${LLAMA_THREADS:-16}
+      --parallel ${LLAMA_N_PARALLEL:-8}
+      --temp ${LLAMA_TEMP:-0.8}
+      --top-k ${LLAMA_TOP_K:-40}
+      --top-p ${LLAMA_TOP_P:-0.95}
+      --min-p ${LLAMA_MIN_P:-0.05}
+      --repeat-penalty ${LLAMA_REPEAT_PENALTY:-1.1}
+      --log-verbose
+      --mlock
+      --jinja
+      --reasoning-format auto
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui
+    container_name: open-webui
+    restart: always
+    ports:
+      - "3033:8080"
+    volumes:
+      - /docker_data/open-webui:/app/backend/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  llama-cache:
