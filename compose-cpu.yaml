@@ -69,7 +69,7 @@ services:
 
   # --- AI / Llama Services ---
   llama-cpp:
-    image: ghcr.io/ggml-org/llama.cpp:server-cuda13
+    image: ghcr.io/ggml-org/llama.cpp:server
     container_name: llama-cpp
     ports:
       - "11434:11434"
@@ -92,11 +92,9 @@ services:
     command: >
       --model /app/models/${LLAMA_MODEL}
       -dr ${LLAMA_MODEL}
-      --n-gpu-layers 99
       --split-mode tensor
       --fit-ctx 64000
       -c 64000
-      --n-gpu-layers-draft all
       --port 11434
       --ctx-size ${LLAMA_ARG_CTX_SIZE:-64000}
       --batch-size ${LLAMA_BATCH_SIZE:-4096}
@@ -117,13 +115,6 @@ services:
     restart: unless-stopped
     networks:
       - ai-network
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [ gpu ]
     logging:
       driver: "json-file"
       options:
