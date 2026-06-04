@@ -1,14 +1,15 @@
 ## 実行
+model-download.shを実行して
 
 docker compose up
 
-モデルダウンロードに時間がかかるものは
-START_PERIOD=5m docker compose up
+<!--モデルダウンロードに時間がかかるものは-->
+<!--START_PERIOD=5m docker compose up-->
 
 .envにモデルを指定
 
-モデル探しはここ
-https://hub.docker.com/u/ai
+<!--モデル探しはここ-->
+<!--https://hub.docker.com/u/ai-->
 
 hermesのセットアップは
 ```
